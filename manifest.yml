@@ -1,0 +1,15 @@
+applications:
+- path: .
+  memory: 256M
+  instances: 1
+  domain: mybluemix.net
+  name: ldap-status
+  host: ldap-status
+  disk_quota: 1024M
+  env:
+    LDAP_URL: ldap://cap-sg-prd-4.integration.ibmcloud.com:17830
+    LDAP_DN: cn=root
+    LDAP_DN_PASSWORD: notgonnafindithere
+    LDAP_SUFFIX: ou=caseinc,o=sample
+    LDAP_USERNAME: wasadmin
+    LDAP_USER_PASSWORD: notgonnafindithere
