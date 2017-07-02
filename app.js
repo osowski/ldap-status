@@ -72,9 +72,10 @@ app.get("/quixote", function(req, res) {
 		// If there is an error, tell the user about it. Normally we would
 		// log the incident, but in this application the user is really an LDAP
 		// administrator.
-		if (err != null)
+		if (err != null) {
 			res.sendStatus(500);
-		else
+			adminClient.unbind();
+		} else {
 			// Search for a user with the correct UID.
 			adminClient.search(sessionData.ldap.suffix, {
 				scope: "sub",
@@ -97,25 +98,31 @@ app.get("/quixote", function(req, res) {
 							if (err == null) {
                 console.log(" User found and logon successful ");
 								res.sendStatus(200);
+								userClient.unbind();
+								adminClient.unbind();
 							} else {
                 console.log(" User found but logon not successful ");
               	res.sendStatus(403);
+								userClient.unbind();
+								adminClient.unbind();
               }
-						});
-					});
+						}); //END userClient.bind
+					}); //END ldapResult.on
 
 					// If we get to the end and there is no DN, it means there is no such user.
 					ldapResult.on("end", function() {
 						if (sessionData.dn === ""){
               console.log(" No such user ");
               res.sendStatus(403);
+							userClient.unbind();
+							adminClient.unbind();
             }
-					});
+					}); //END ldapResult.on
 				}
-
-			});
-	});
-});
+			}); //END adminClient.search
+		}
+	}); //END adminClient.bind
+}); // END app.get
 
 // start server on the specified port and binding host
 app.listen(appEnv.port, '0.0.0.0', function() {
